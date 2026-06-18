@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Enregistrement des sorties d'argent (retraits) – Caisse Salle Numérique UNILU">
+  <title>Caisse UNILU – Sorties d'argent</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+
+  <button class="mobile-toggle" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="logo-icon"><img src="salle.png" alt="Salle Numérique"></div>
+        <div class="logo-text">
+          <span class="logo-title">Caisse UNILU</span>
+          <span class="logo-subtitle">Salle Numérique</span>
+        </div>
+      </a>
+    </div>
+    <div class="sidebar-nav">
+      <span class="nav-label">Navigation</span>
+      <a href="dashboard.html" class="nav-link">Tableau de Bord</a>
+      <a href="entree.html" class="nav-link">Entrées d'argent</a>
+      <a href="sortie.html" class="nav-link active">Sorties d'argent</a>
+      <a href="historique.html" class="nav-link">Historique</a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-info">
+        <div class="footer-avatar">C</div>
+        <div class="footer-details">
+          <span class="footer-name">Caissière</span>
+          <span class="footer-role">Opératrice</span>
+        </div>
+        <div class="pulse-dot"></div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="page-header animate-in">
+      <div class="header-row">
+        <div>
+          <h1>Sorties <span>d'argent</span></h1>
+          <p>Enregistrez les retraits effectués par le personnel</p>
+        </div>
+        <div class="header-date"><i class="fa-solid fa-calendar-days"></i> <span id="current-date"></span></div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid" style="margin-bottom:28px;">
+      <div class="stat-card animate-in">
+        <div class="stat-header">
+          <div class="stat-icon orange"><i class="fa-solid fa-arrow-up-long"></i></div>
+          <span class="stat-label">Total Sorties</span>
+        </div>
+        <div class="stat-value" id="total-sorties">0 FC</div>
+      </div>
+      <div class="stat-card primary-bg animate-in">
+        <div class="stat-header">
+          <div class="stat-icon white-icon"><i class="fa-solid fa-wallet"></i></div>
+          <span class="stat-label">Solde Actuel</span>
+        </div>
+        <div class="stat-value" id="solde-actuel">0 FC</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <!-- Form -->
+      <div class="card animate-in">
+        <div class="card-header">
+          <span class="card-title"><span class="icon"><i class="fa-solid fa-pen-to-square"></i></span> Nouveau retrait</span>
+        </div>
+        <div class="card-body">
+          <form id="form-sortie" onsubmit="handleSortie(event)">
+            <div class="form-group">
+              <label class="form-label" for="personnel">Nom du personnel demandeur *</label>
+              <input type="text" class="form-control" id="personnel" placeholder="Nom complet du personnel" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="motif">Motif du retrait *</label>
+              <input type="text" class="form-control" id="motif" placeholder="Ex : Achat cartouche, Frais transport..." required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="montant">Montant (FC) *</label>
+              <div class="amount-input-wrapper">
+                <span class="currency">FC</span>
+                <input type="number" class="form-control" id="montant" placeholder="0" min="1" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="jour-retrait">Jour du retrait *</label>
+                <input type="date" class="form-control" id="jour-retrait" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="heure-retrait">Heure du retrait *</label>
+                <input type="time" class="form-control" id="heure-retrait" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="description">Détails supplémentaires (optionnel)</label>
+              <textarea class="form-control" id="description" rows="2" placeholder="Informations complémentaires..."></textarea>
+            </div>
+
+            <!-- Info box -->
+            <div class="info-box">
+              <span class="info-box-icon"><i class="fa-solid fa-circle-info"></i></span>
+              <div>
+                <div class="info-box-title">Retrait immédiat</div>
+                <div class="info-box-text">
+                  Le retrait sera directement déduit du solde. Un rapport détaillé (heure, motif, montant, personnel)
+                  sera généré pour le super administrateur. En cas d'absence du super administrateur,
+                  la caissière peut valider les retraits.
+                </div>
+              </div>
+            </div>
+
+            <div class="btn-group">
+              <button type="submit" class="btn btn-danger" style="flex:1;"><i class="fa-solid fa-money-bill-transfer"></i> Effectuer le retrait</button>
+              <button type="reset" class="btn btn-secondary">Réinitialiser</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Recent sorties -->
+      <div class="card animate-in">
+        <div class="card-header">
+          <span class="card-title"><span class="icon"><i class="fa-solid fa-clock-rotate-left"></i></span> Derniers retraits</span>
+          <button class="btn btn-outline-primary" onclick="exportSortiesReport()"><i class="fa-solid fa-file-lines"></i> Rapport</button>
+        </div>
+        <div class="card-body" id="recent-sorties">
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="fa-solid fa-inbox"></i></div>
+            <div class="empty-state-title">Aucun retrait</div>
+            <div class="empty-state-text">Les retraits enregistrés apparaîtront ici.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-overlay" id="modal-confirm">
+    <div class="modal">
+      <div class="modal-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <div class="modal-title">Confirmer le retrait</div>
+      <div class="modal-text" id="modal-text">Voulez-vous vraiment effectuer ce retrait ?</div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('modal-confirm')">Annuler</button>
+        <button class="btn btn-danger" onclick="confirmSortie()">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    let pendingSortie = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Pre-fill date and time
+      const now = new Date();
+      document.getElementById('jour-retrait').value = now.toISOString().split('T')[0];
+      document.getElementById('heure-retrait').value = now.toTimeString().slice(0, 5);
+      refreshSortiePage();
+    });
+
+    function handleSortie(e) {
+      e.preventDefault();
+
+      // Check if today is closed
+      const today = new Date().toISOString().split('T')[0];
+      if (CaisseApp.isDayClosed(today)) {
+        showToast('error', 'Journée clôturée', 'La journée est clôturée. Impossible d\'ajouter de nouvelles transactions.');
+        return;
+      }
+
+      const personnel = document.getElementById('personnel').value.trim();
+      const motif = document.getElementById('motif').value.trim();
+      const montant = parseInt(document.getElementById('montant').value);
+      const jour = document.getElementById('jour-retrait').value;
+      const heure = document.getElementById('heure-retrait').value;
+      const description = document.getElementById('description').value.trim();
+
+      if (!personnel || !motif || !montant || montant <= 0 || !jour || !heure) {
+        showToast('error', 'Erreur', 'Veuillez remplir tous les champs obligatoires.');
+        return;
+      }
+
+      pendingSortie = { personnel, motif, montant, jour, heure, description };
+      document.getElementById('modal-text').innerHTML = `
+        Retrait de <strong>${formatMontant(montant)}</strong><br>
+        Personnel : <strong>${personnel}</strong><br>
+        Motif : <em>"${motif}"</em><br>
+        Date : ${jour} à ${heure}
+      `;
+      openModal('modal-confirm');
+    }
+
+    function confirmSortie() {
+      if (!pendingSortie) return;
+      const newTx = CaisseApp.addTransaction({
+        type: 'sortie',
+        categorie: 'retrait',
+        montant: pendingSortie.montant,
+        personnel: pendingSortie.personnel,
+        motif: pendingSortie.motif,
+        jourRetrait: pendingSortie.jour,
+        heureRetrait: pendingSortie.heure,
+        description: pendingSortie.description
+      });
+
+      showToast('success', 'Retrait effectué', `${formatMontant(pendingSortie.montant)} retiré par ${pendingSortie.personnel}.`);
+      closeModal('modal-confirm');
+      pendingSortie = null;
+      document.getElementById('form-sortie').reset();
+      // Re-fill date/time
+      const now = new Date();
+      document.getElementById('jour-retrait').value = now.toISOString().split('T')[0];
+      document.getElementById('heure-retrait').value = now.toTimeString().slice(0, 5);
+      refreshSortiePage();
+
+      // Auto-generate receipt PDF
+      generateReceipt(newTx);
+    }
+
+    function refreshSortiePage() {
+      const stats = CaisseApp.getStats();
+      document.getElementById('total-sorties').textContent = formatMontant(stats.totalSorties);
+      document.getElementById('solde-actuel').textContent = formatMontant(stats.solde);
+
+      const sorties = CaisseApp.getFilteredTransactions({ type: 'sortie' }).slice(0, 8);
+      const container = document.getElementById('recent-sorties');
+
+      if (sorties.length === 0) {
+        container.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><i class="fa-solid fa-inbox"></i></div><div class="empty-state-title">Aucun retrait</div><div class="empty-state-text">Les retraits enregistrés apparaîtront ici.</div></div>`;
+        return;
+      }
+
+      container.innerHTML = sorties.map(t => `
+        <div class="transaction-item">
+          <div class="transaction-icon expense"><i class="fa-solid fa-arrow-up-long"></i></div>
+          <div class="transaction-details">
+            <div class="transaction-title">${t.personnel || 'Personnel'} — ${t.motif}</div>
+            <div class="transaction-meta"><i class="fa-regular fa-clock"></i> ${t.jourRetrait || formatDate(t.date)} à ${t.heureRetrait || formatTime(t.date)}${t.description ? ' · ' + t.description : ''}</div>
+          </div>
+          <div class="transaction-amount negative">-${formatMontant(t.montant)}</div>
+        </div>
+      `).join('');
+    }
+
+    function exportSortiesReport() {
+      const sorties = CaisseApp.getFilteredTransactions({ type: 'sortie' });
+      if (sorties.length === 0) { showToast('warning', 'Aucune donnée', 'Pas de retraits à exporter.'); return; }
+      exportCSV(sorties, `rapport_retraits_${new Date().toISOString().split('T')[0]}.csv`);
+    }
+  </script>
+</body>
+</html>
